@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cursor Bug: Step 2</title>
+    <style>
+        /* We forcefully apply cursor: none to EVERYTHING. 
+           If the bug exists, the physical cursor will still show.
+        */
+        html, body, video, * {
+            cursor: none !important;
+            background-color: #222;
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+        }
+        video { margin-top: 50px; width: 800px; border: 2px solid #555; }
+    </style>
+</head>
+<body>
+    <h1>HANDS OFF THE MOUSE!</h1>
+    <p>This page loaded and CSS is explicitly set to <code>cursor: none !important;</code></p>
+    <p>However, the OS cursor is still visible until you physically move the mouse.</p>
+    
+    <video src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" autoplay controls></video>
+
+    <script>
+        // Prove to the console that the DOM knows the cursor should be hidden
+        setTimeout(() => {
+            console.log("Diagnostic Check: The browser's computed CSS for the body cursor is:", window.getComputedStyle(document.body).cursor);
+        }, 1000);
+    </script>
+</body>
+</html>
