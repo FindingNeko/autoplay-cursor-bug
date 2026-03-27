@@ -4,13 +4,67 @@
     <meta charset="UTF-8">
     <title>Cursor Bug: Step 1</title>
     <style>
-        body { font-family: sans-serif; padding: 40px; text-align: center; }
-        button { padding: 15px 30px; font-size: 18px; cursor: pointer; }
+        body { 
+            font-family: sans-serif; 
+            padding: 40px; 
+            text-align: center; 
+            background: #f4f4f9; 
+            color: #333; 
+        }
+        button { 
+            padding: 15px 30px; 
+            font-size: 18px; 
+            cursor: pointer; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+        }
+        button:disabled { 
+            background: #ccc; 
+            cursor: default; 
+        }
+        #status { 
+            margin-top: 20px; 
+            font-size: 1.2em; 
+            font-weight: bold; 
+            color: #d9534f; 
+        }
     </style>
 </head>
 <body>
     <h1>Chromium Autoplay Cursor Bug</h1>
-    <p>Clicking the button simulates finishing an episode and navigating to the next one.</p>
-    <button onclick="window.location.href='test.html'">Go to Next Episode</button>
+    <p>Click the button below, then immediately take your hand completely off the physical mouse.</p>
+
+    <button id="navButton" onclick="startCountdown()">Go to Next Episode</button>
+    
+    <div id="status"></div>
+
+    <script>
+        function startCountdown() {
+            const btn = document.getElementById('navButton');
+            const status = document.getElementById('status');
+            let timeLeft = 3;
+
+            // Disable the button so they don't double-click
+            btn.disabled = true;
+            btn.innerText = "Loading...";
+
+            // Start the visual countdown
+            status.innerText = `Navigating in ${timeLeft}... Take your hand off the mouse!`;
+
+            const timer = setInterval(() => {
+                timeLeft -= 1;
+                if (timeLeft > 0) {
+                    status.innerText = `Navigating in ${timeLeft}... Take your hand off the mouse!`;
+                } else {
+                    clearInterval(timer);
+                    status.innerText = "Navigating now!";
+                    // Trigger the page change
+                    window.location.href = 'test.html';
+                }
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
