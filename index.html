@@ -2,79 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cursor Bug: SPA Simulator</title>
+    <title>Chromium OOPIF Cursor Bug</title>
     <style>
-        body { 
-            font-family: sans-serif; 
-            padding: 40px; 
-            text-align: center; 
-            background: #222; 
-            color: white; 
+        body { font-family: sans-serif; text-align: center; background: #222; color: white; padding-top: 50px; }
+        button { padding: 15px 30px; font-size: 18px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
+        #iframe-container { 
+            margin-top: 30px; height: 500px; width: 800px; 
+            margin-left: auto; margin-right: auto; 
+            border: 2px dashed #555; display: none; 
         }
-        button { 
-            padding: 15px 30px; 
-            font-size: 18px; 
-            cursor: pointer; 
-            background: #007bff; 
-            color: white; 
-            border: none; 
-            border-radius: 5px; 
-            margin-bottom: 20px;
-        }
-        /* The player container starts with a normal cursor */
-        #player-container {
-            width: 800px;
-            height: 450px;
-            margin: 0 auto;
-            border: 2px solid #555;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #888;
-        }
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
-    <h1>Dynamic Player Bug Trap</h1>
-    <button id="navButton" onclick="simulateNextEpisode()">1. Click Me</button>
-    <h3 id="status">2. Leave your mouse still!</h3>
+    <h1>Chromium OOPIF Cursor Sync Bug</h1>
+    <p>This demonstrates the cursor sync failure across process boundaries during media playback.</p>
     
-    <div id="player-container">
-        Waiting for next episode...
+    <button id="startBtn" onclick="runTest()">Start Test</button>
+    <h3 id="status" style="color: #ff4444; display: none;">HANDS OFF THE MOUSE! Injecting Cross-Origin Iframe...</h3>
+    
+    <div id="iframe-container">
+        <iframe id="testFrame" src="https://codepen.io/FindingNeko/full/VYKQeNV" allow="autoplay"></iframe>
     </div>
 
     <script>
-        function simulateNextEpisode() {
-            const btn = document.getElementById('navButton');
-            const status = document.getElementById('status');
-            const container = document.getElementById('player-container');
+        function runTest() {
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('status').style.display = 'block';
             
-            btn.disabled = true;
-            status.style.color = "#ff4444";
-            status.innerText = "2. HANDS OFF THE MOUSE! Loading next episode in 3 seconds...";
-
-            // Step 1: Wait 3 seconds to ensure the mouse is perfectly still
+            // Wait 2 seconds so the user can physically let go of the mouse
             setTimeout(() => {
-                status.innerText = "3. Video injected and playing. Waiting for 2-second idle timeout...";
-                
-                // Step 2: Dynamically inject the video (Simulating SPA behavior)
-                container.innerHTML = `<video src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" autoplay muted style="width:100%; height:100%; pointer-events:none;"></video>`;
-                
-                // Step 3: Simulate the video player's idle timer
-                setTimeout(() => {
-                    status.innerText = "4. Idle timeout reached. JavaScript applying cursor: none...";
-                    
-                    // Dynamically apply the CSS via JS
-                    container.style.cursor = 'none';
-                    document.body.style.cursor = 'none';
-                    
-                    console.log("Cursor explicitly set to none via JS. Check the physical screen.");
-                    status.innerText += " (Check your physical cursor now)";
-                    
-                }, 2000); // 2 second idle timer
-                
-            }, 3000); // 3 second initial delay
+                // Inject the iframe into the page
+                document.getElementById('iframe-container').style.display = 'block';
+            }, 2000);
         }
     </script>
 </body>
