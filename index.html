@@ -4,37 +4,107 @@
     <meta charset="UTF-8">
     <title>Chromium OOPIF Cursor Bug</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #222; color: white; padding-top: 50px; }
-        button { padding: 15px 30px; font-size: 18px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; }
-        #iframe-container { 
-            margin-top: 30px; height: 500px; width: 800px; 
-            margin-left: auto; margin-right: auto; 
-            border: 2px dashed #555; display: none; 
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            text-align: center; 
+            background: #202124; 
+            color: #e8eaed; 
+            padding-top: 40px; 
+            margin: 0;
         }
-        iframe { width: 100%; height: 100%; border: none; }
+        .instructions {
+            max-width: 650px;
+            margin: 0 auto 30px auto;
+            line-height: 1.6;
+            color: #9aa0a6;
+            text-align: left;
+            background: #292a2d;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #3c4043;
+        }
+        /* The "Stage" reserves the exact space the iframe will use */
+        #stage { 
+            width: 800px; 
+            height: 450px; 
+            margin: 0 auto; 
+            background: #000; 
+            border: 1px solid #5f6368; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center;
+            position: relative;
+        }
+        button { 
+            padding: 12px 24px; 
+            font-size: 16px; 
+            cursor: pointer; 
+            background: #8ab4f8; 
+            color: #202124; 
+            border: none; 
+            border-radius: 4px;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+        button:hover { background: #aecbfa; }
+        #status { 
+            margin-top: 20px; 
+            font-size: 16px; 
+            color: #fbbc04; 
+            display: none; 
+        }
+        /* The iframe perfectly overlays the stage when injected */
+        iframe { 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
     </style>
 </head>
 <body>
-    <h1>Chromium OOPIF Cursor Sync Bug</h1>
-    <p>This demonstrates the cursor sync failure across process boundaries during media playback.</p>
+    <h2>OOPIF Cursor Synchronization Bug</h2>
     
-    <button id="startBtn" onclick="runTest()">Start Test</button>
-    <h3 id="status" style="color: #ff4444; display: none;">HANDS OFF THE MOUSE! Injecting Cross-Origin Iframe...</h3>
+    <div class="instructions">
+        <strong>Reproduction Steps:</strong>
+        <ol>
+            <li>Position your cursor over the "Run Autoplay Test" button below.</li>
+            <li>Click the button, and then <b>do not move your mouse</b>.</li>
+            <li>A cross-origin iframe will load underneath your stationary cursor and begin playing media.</li>
+            <li>After 2 seconds, the iframe's script applies <code>cursor: none</code> to hide the pointer.</li>
+            <li><i>Notice that the system cursor remains visible until a physical mouse movement occurs.</i></li>
+        </ol>
+    </div>
     
-    <div id="iframe-container">
-        <iframe id="testFrame" src="https://codepen.io/FindingNeko/full/VYKQeNV" allow="autoplay"></iframe>
+    <div id="stage">
+        <button id="startBtn" onclick="runTest()">Run Autoplay Test</button>
+        <div id="status">Please keep your mouse perfectly still. Loading iframe...</div>
     </div>
 
     <script>
         function runTest() {
-            document.getElementById('startBtn').style.display = 'none';
-            document.getElementById('status').style.display = 'block';
+            const btn = document.getElementById('startBtn');
+            const status = document.getElementById('status');
+            const stage = document.getElementById('stage');
             
-            // Wait 2 seconds so the user can physically let go of the mouse
+            // Hide button, show status
+            btn.style.display = 'none';
+            status.style.display = 'block';
+            
+            // Wait 2.5 seconds to ensure the user's hand is off the mouse
             setTimeout(() => {
-                // Inject the iframe into the page
-                document.getElementById('iframe-container').style.display = 'block';
-            }, 2000);
+                status.innerText = "Iframe injected. Waiting for player idle timeout...";
+                
+                // Inject the cross-origin iframe directly into the stage
+                const iframe = document.createElement('iframe');
+                iframe.src = "https://codepen.io/FindingNeko/full/VYKQeNV"; 
+                iframe.allow = "autoplay";
+                
+                stage.appendChild(iframe);
+            }, 2500);
         }
     </script>
 </body>
