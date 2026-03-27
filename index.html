@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cursor Bug: Step 1</title>
+    <title>Cursor Bug: SPA Simulator</title>
     <style>
         body { 
             font-family: sans-serif; 
             padding: 40px; 
             text-align: center; 
-            background: #f4f4f9; 
-            color: #333; 
+            background: #222; 
+            color: white; 
         }
         button { 
             padding: 15px 30px; 
@@ -19,51 +19,62 @@
             color: white; 
             border: none; 
             border-radius: 5px; 
+            margin-bottom: 20px;
         }
-        button:disabled { 
-            background: #ccc; 
-            cursor: default; 
-        }
-        #status { 
-            margin-top: 20px; 
-            font-size: 1.2em; 
-            font-weight: bold; 
-            color: #d9534f; 
+        /* The player container starts with a normal cursor */
+        #player-container {
+            width: 800px;
+            height: 450px;
+            margin: 0 auto;
+            border: 2px solid #555;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #888;
         }
     </style>
 </head>
 <body>
-    <h1>Chromium Autoplay Cursor Bug</h1>
-    <p>Click the button below, then immediately take your hand completely off the physical mouse.</p>
-
-    <button id="navButton" onclick="startCountdown()">Go to Next Episode</button>
+    <h1>Dynamic Player Bug Trap</h1>
+    <button id="navButton" onclick="simulateNextEpisode()">1. Click Me</button>
+    <h3 id="status">2. Leave your mouse still!</h3>
     
-    <div id="status"></div>
+    <div id="player-container">
+        Waiting for next episode...
+    </div>
 
     <script>
-        function startCountdown() {
+        function simulateNextEpisode() {
             const btn = document.getElementById('navButton');
             const status = document.getElementById('status');
-            let timeLeft = 3;
-
-            // Disable the button so they don't double-click
+            const container = document.getElementById('player-container');
+            
             btn.disabled = true;
-            btn.innerText = "Loading...";
+            status.style.color = "#ff4444";
+            status.innerText = "2. HANDS OFF THE MOUSE! Loading next episode in 3 seconds...";
 
-            // Start the visual countdown
-            status.innerText = `Navigating in ${timeLeft}... Take your hand off the mouse!`;
-
-            const timer = setInterval(() => {
-                timeLeft -= 1;
-                if (timeLeft > 0) {
-                    status.innerText = `Navigating in ${timeLeft}... Take your hand off the mouse!`;
-                } else {
-                    clearInterval(timer);
-                    status.innerText = "Navigating now!";
-                    // Trigger the page change
-                    window.location.href = 'test.html';
-                }
-            }, 1000);
+            // Step 1: Wait 3 seconds to ensure the mouse is perfectly still
+            setTimeout(() => {
+                status.innerText = "3. Video injected and playing. Waiting for 2-second idle timeout...";
+                
+                // Step 2: Dynamically inject the video (Simulating SPA behavior)
+                container.innerHTML = `<video src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" autoplay muted style="width:100%; height:100%; pointer-events:none;"></video>`;
+                
+                // Step 3: Simulate the video player's idle timer
+                setTimeout(() => {
+                    status.innerText = "4. Idle timeout reached. JavaScript applying cursor: none...";
+                    
+                    // Dynamically apply the CSS via JS
+                    container.style.cursor = 'none';
+                    document.body.style.cursor = 'none';
+                    
+                    console.log("Cursor explicitly set to none via JS. Check the physical screen.");
+                    status.innerText += " (Check your physical cursor now)";
+                    
+                }, 2000); // 2 second idle timer
+                
+            }, 3000); // 3 second initial delay
         }
     </script>
 </body>
